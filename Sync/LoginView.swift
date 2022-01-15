@@ -10,11 +10,12 @@ import Firebase
 
 struct LoginView: View {
     
-    @State var isLogin = false                  // changing mode
+    let didCompleteLogin: () -> ()
+    @State private var isLogin = false                  // changing mode
     @State private var email: String = ""       // Email Address
     @State private var password: String = ""    // Password
-    @State var signInError = ""                 // signin/signup error
-    @State var shouldShowImagePicker = false    // show image picker
+    @State private var signInError = ""                 // signin/signup error
+    @State private var shouldShowImagePicker = false    // show image picker
     @State var image: UIImage?
     
     var areBothFieldFilled: Bool {  // for changing sign in button style
@@ -33,10 +34,14 @@ struct LoginView: View {
                 signInError = "Fail to sign in: \(error)"
                 return
             }
-            signInError = "Success"
+            self.didCompleteLogin()
         }
     }
     private func createNewAccount() {   // create acc
+        if self.image == nil {
+            self.signInError = "please select an avatar image and try again"
+            return
+        }
         FirebaseManager.shared.auth.createUser(withEmail: email, password: password) { result, error in
             if let error = error {
                 signInError = "Failed to create user: \(error)"
@@ -44,6 +49,7 @@ struct LoginView: View {
             }
             signInError = "Success"
             self.persistImageToStorage()
+            self.didCompleteLogin()
         }
     }
     private func persistImageToStorage() {      // save image to storage and save user information
@@ -173,6 +179,8 @@ struct LoginView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        LoginView(didCompleteLogin: {
+            
+        })
     }
 }

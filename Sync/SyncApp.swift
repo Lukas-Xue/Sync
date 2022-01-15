@@ -11,7 +11,7 @@ import SwiftUI
 struct SyncApp: App {
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            MainMessagesView()
         }
     }
 }

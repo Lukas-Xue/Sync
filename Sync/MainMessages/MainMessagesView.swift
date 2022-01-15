@@ -6,41 +6,50 @@
 //
 
 import SwiftUI
-
-struct ChatUser {
-    let uid, email, profileImageUrl: String
-}
+import SDWebImageSwiftUI
 
 class MainMessageViewModel: ObservableObject {
     @Published var user: ChatUser?
-    private func fetchCurrentUser() {
+    @Published var isLoggedOut: Bool = true
+    func fetchCurrentUser() {
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
-        FirebaseManager.shared.firestore.collection("user").document(uid).getDocument { snapshot, error in
+        FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
             if let error = error {
                 print("Failed to fetch current user: \(error)")
                 return
             }
             guard let data = snapshot?.data() else {return}
-            self.user = ChatUser(uid: data["uid"] as? String ?? "",
-                                email: data["email"] as? String ?? "",
-                                profileImageUrl: data["profileImageUrl"] as? String ?? "")
+            self.user = .init(data: data)
         }
     }
     init() {
+        DispatchQueue.main.async {
+            self.isLoggedOut = FirebaseManager.shared.auth.currentUser?.uid == nil
+        }
         fetchCurrentUser()
+    }
+    func handleSignOut() {
+        isLoggedOut.toggle()
+        try? FirebaseManager.shared.auth.signOut()
     }
 }
 
 struct MainMessagesView: View {
     
     @ObservedObject private var vm = MainMessageViewModel()
-    @State var logOutOption = false
     private var NavigationBar: some View {      // nav bar
         HStack {
-            Image(systemName: "person.fill")
-                .font(.system(size: 34, weight: .heavy))
+            WebImage(url: URL(string: vm.user?.profileImageUrl ?? ""))
+                .resizable()
+                .scaledToFill()
+                .frame(width: 50, height: 50)
+                .clipped()
+                .cornerRadius(50)
+                .overlay(RoundedRectangle(cornerRadius: 50).stroke(Color(.label), lineWidth: 1))
+                .shadow(radius: 5)
+            
             VStack(alignment: .leading, spacing: 4) {
-                Text("USERNAME")
+                Text("\(vm.user?.email ?? "")")
                     .font(.system(size: 24, weight: .bold))
                 HStack {
                     Circle()
@@ -53,13 +62,19 @@ struct MainMessagesView: View {
             }
             Spacer()
             Button(action: {
-                logOutOption.toggle()   // FIXME: LOG OUT OPTION
+                vm.handleSignOut() // FIXME: LOG OUT OPTION
             }, label: {
                 Image(systemName: "gearshape")
                     .font(.system(size: 20, weight: .thin))
             })
         }
         .padding()
+        .fullScreenCover(isPresented: $vm.isLoggedOut, onDismiss: nil) {
+            LoginView(didCompleteLogin: {
+                self.vm.isLoggedOut = false
+                self.vm.fetchCurrentUser()
+            })
+        }
     }
     private var newMessageButton: some View {       // create msg
         Button(action: {
