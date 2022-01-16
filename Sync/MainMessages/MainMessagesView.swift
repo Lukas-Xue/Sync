@@ -141,7 +141,6 @@ struct MainMessagesView: View {
             VStack {
                 NavigationBar
                 messageView
-                
                 NavigationLink("", isActive: $shouldOpenChatLogView) {
                     ChatLogView(chatUser: self.chatUser)
                 }

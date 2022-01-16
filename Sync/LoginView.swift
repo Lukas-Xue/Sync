@@ -49,7 +49,9 @@ struct LoginView: View {
             }
             signInError = "Success"
             self.persistImageToStorage()
-            self.didCompleteLogin()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                self.loginUser()
+            }
         }
     }
     private func persistImageToStorage() {      // save image to storage and save user information
@@ -105,7 +107,6 @@ struct LoginView: View {
                     Button(action: {
                         shouldShowImagePicker.toggle()
                     }, label: {
-                        
                         VStack {    // pfp
                             if let image = self.image {    // if seletected
                                 Image(uiImage: image)
