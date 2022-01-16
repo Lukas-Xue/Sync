@@ -163,6 +163,9 @@ struct LoginView: View {
                     .foregroundColor(.red)
                 Spacer()
             }
+            .onAppear {
+                UIScrollView.appearance().keyboardDismissMode = .onDrag
+            }
             .padding()
             .navigationBarTitle("")
             .navigationBarHidden(true)

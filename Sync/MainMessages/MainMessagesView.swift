@@ -11,7 +11,7 @@ import SDWebImageSwiftUI
 class MainMessageViewModel: ObservableObject {
     @Published var user: ChatUser?
     @Published var isLoggedOut: Bool = true
-    func fetchCurrentUser() {
+    func fetchCurrentUser() {       // get user information
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
             if let error = error {
@@ -28,7 +28,7 @@ class MainMessageViewModel: ObservableObject {
         }
         fetchCurrentUser()
     }
-    func handleSignOut() {
+    func handleSignOut() {      // go back to login view
         isLoggedOut.toggle()
         try? FirebaseManager.shared.auth.signOut()
     }
@@ -37,6 +37,9 @@ class MainMessageViewModel: ObservableObject {
 struct MainMessagesView: View {
     
     @ObservedObject private var vm = MainMessageViewModel()
+    @State var shouldShowNewMessageScreen = false
+    @State var chatUser: ChatUser?
+    @State var shouldOpenChatLogView = false
     private var NavigationBar: some View {      // nav bar
         HStack {
             WebImage(url: URL(string: vm.user?.profileImageUrl ?? ""))
@@ -78,7 +81,7 @@ struct MainMessagesView: View {
     }
     private var newMessageButton: some View {       // create msg
         Button(action: {
-            
+            shouldShowNewMessageScreen.toggle()
         }, label: {
             HStack {
                 Spacer()
@@ -93,26 +96,36 @@ struct MainMessagesView: View {
             .padding(.horizontal)
             .shadow(radius: 15)
         })
+            .fullScreenCover(isPresented: $shouldShowNewMessageScreen) {
+                CreateNewMessageView(didSelectNewUser: { user in
+                    self.chatUser = user
+                    self.shouldOpenChatLogView.toggle()
+                })
+            }
     }
     private var messageView: some View {            // msg queue
         ScrollView {
             ForEach(0..<10, id: \.self) { num in
                 VStack {
-                    HStack(spacing: 16) {
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 32))
-                            .padding(8)
-                            .overlay(RoundedRectangle(cornerRadius: 44).stroke(Color(.label), lineWidth: 1))
-                        VStack(alignment: .leading) {
-                            Text("Username")
-                                .font(.system(size: 16, weight: .bold))
-                            Text("Message sent to user")
-                                .font(.system(size: 14))
-                                .foregroundColor(Color(UIColor.lightGray))
+                    NavigationLink {
+                        Text("Destination")
+                    } label: {
+                        HStack(spacing: 16) {
+                            Image(systemName: "person.fill")
+                                .font(.system(size: 32))
+                                .padding(8)
+                                .overlay(RoundedRectangle(cornerRadius: 44).stroke(Color(.label), lineWidth: 1))
+                            VStack(alignment: .leading) {
+                                Text("Username")
+                                    .font(.system(size: 16, weight: .bold))
+                                Text("Message sent to user")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(Color(UIColor.lightGray))
+                            }
+                            Spacer()
+                            Text("22d")
+                                .font(.system(size: 14, weight: .semibold))
                         }
-                        Spacer()
-                        Text("22d")
-                            .font(.system(size: 14, weight: .semibold))
                     }
                     Divider()
                         .padding(.vertical, 8)
@@ -128,6 +141,10 @@ struct MainMessagesView: View {
             VStack {
                 NavigationBar
                 messageView
+                
+                NavigationLink("", isActive: $shouldOpenChatLogView) {
+                    ChatLogView(chatUser: self.chatUser)
+                }
             }
             .overlay(newMessageButton, alignment: .bottom)
             .navigationBarHidden(true)
