@@ -9,7 +9,7 @@ import SwiftUI
 import SDWebImageSwiftUI
 import Firebase
 
-struct ChatMessage: Identifiable {
+struct ChatMessage: Identifiable{
     var id: String { documentID }
     let documentID: String
     let fromID, toID, text: String
@@ -24,6 +24,7 @@ struct ChatMessage: Identifiable {
 class ChatLogViewModel: ObservableObject {
     @Published var chatText = ""
     @Published var chatMessages = [ChatMessage]()
+    @Published var count = 0
     let chatUser: ChatUser?
     init(chatUser: ChatUser?) {
         self.chatUser = chatUser
@@ -44,6 +45,9 @@ class ChatLogViewModel: ObservableObject {
                     self.chatMessages.append(.init(documentID: ID, data: data))
                 }
             })
+            DispatchQueue.main.async {
+                self.count += 1
+            }
         }
     }
     func handleSend() {
@@ -62,13 +66,14 @@ class ChatLogViewModel: ObservableObject {
             if let error = error {
                 print("failed to send data2 to firestore: \(error)")
             }
+            self.count += 1
         }
-        
     }
 }
 
 struct ChatLogView: View {
     let chatUser: ChatUser?
+    @FocusState private var isKeyboardOn: Bool
     init(chatUser: ChatUser?) {
         self.chatUser = chatUser
         self.vm = .init(chatUser: chatUser)
@@ -98,6 +103,10 @@ struct ChatLogView: View {
                         .cornerRadius(12)
                         .padding(.horizontal, 12)
                         .opacity(vm.chatText.isEmpty ? 0.6 : 1)
+                        .focused($isKeyboardOn)
+                        .onChange(of: isKeyboardOn, perform: { _ in
+                            vm.count += 1
+                        })
                 )
             Button {
                 vm.handleSend()
@@ -112,44 +121,49 @@ struct ChatLogView: View {
     }
     private var messageView: some View {    // msg log
         ScrollView {
-            ForEach(vm.chatMessages) { message in
-                HStack {
-                    if message.fromID == FirebaseManager.shared.auth.currentUser?.uid {
-                        HStack {
-                            Spacer()
+            ScrollViewReader { ScrollViewProxy in
+                ForEach(vm.chatMessages) { message in
+                    HStack {    // blue or white message bubble
+                        if message.fromID == FirebaseManager.shared.auth.currentUser?.uid {
                             HStack {
-                                Text(message.text)
-                                    .foregroundColor(.white)
+                                Spacer()
+                                HStack {
+                                    Text(message.text)
+                                        .foregroundColor(.white)
+                                }
+                                .padding()
+                                .background(Color.blue)
+                                .cornerRadius(12)
                             }
-                            .padding()
-                            .background(Color.blue)
-                            .cornerRadius(12)
-                        }
-                    } else {
-                        HStack {
+                        } else {
                             HStack {
-                                Text(message.text)
-                                    .foregroundColor(.black)
+                                HStack {
+                                    Text(message.text)
+                                        .foregroundColor(.black)
+                                }
+                                .padding()
+                                .background(Color.white)
+                                .cornerRadius(12)
+                                Spacer()
                             }
-                            .padding()
-                            .background(Color.white)
-                            .cornerRadius(12)
-                            Spacer()
                         }
                     }
+                    .padding(.horizontal)
+                    .padding(.top, 5)
                 }
-                .padding(.horizontal)
-                .padding(.top, 5)
+                HStack{Spacer()}
+                .id("target")
+                .onReceive(vm.$count) { _ in
+                    withAnimation(.spring()) {
+                        ScrollViewProxy.scrollTo("target", anchor: .bottom)
+                    }
+                }
             }
-            HStack{Spacer()}
         }
         .background(Color(UIColor.systemGray5))
         .safeAreaInset(edge: .bottom) {
             chatBottomBar
                 .background(.ultraThinMaterial)
-                .onAppear {
-                    UIScrollView.appearance().keyboardDismissMode = .onDrag
-                }
         }
     }
     var body: some View {
