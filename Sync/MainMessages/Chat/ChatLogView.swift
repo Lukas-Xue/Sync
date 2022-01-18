@@ -25,6 +25,7 @@ class ChatLogViewModel: ObservableObject {
     @Published var chatText = ""
     @Published var chatMessages = [ChatMessage]()
     @Published var count = 0
+    @Published var yourInfo: ChatUser?
     let chatUser: ChatUser?
     init(chatUser: ChatUser?) {
         self.chatUser = chatUser
@@ -78,7 +79,9 @@ class ChatLogViewModel: ObservableObject {
             "timestamp": Timestamp(),
             "text": self.chatText,
             "fromID": uid,
-            "toID": toID
+            "toID": toID,
+            "profileImageUrl": chatUser?.profileImageUrl ?? "",
+            "email": chatUser?.email ?? ""
         ] as [String : Any]
         document.setData(data) { error in
             if let error = error {
@@ -87,7 +90,24 @@ class ChatLogViewModel: ObservableObject {
             }
         }
         let receiverdocument = FirebaseManager.shared.firestore.collection("recent_messages").document(toID).collection("messages").document(uid)
-        receiverdocument.setData(data) { error in
+        
+        FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
+            if let error = error {
+                print("Error fetching your information: \(error)")
+            }
+            guard let data = snapshot?.data() else {return}
+            self.yourInfo = .init(data: data)
+        }
+        
+        let receiverdata = [
+            "timestamp": Timestamp(),
+            "text": self.chatText,
+            "fromID": uid,
+            "toID": toID,
+            "profileImageUrl": self.yourInfo?.profileImageUrl ?? "",
+            "email": self.yourInfo?.email ?? ""
+        ] as [String : Any]
+        receiverdocument.setData(receiverdata) { error in
             if let error = error {
                 print("Failed to save recent message for the other guy: \(error)")
                 return

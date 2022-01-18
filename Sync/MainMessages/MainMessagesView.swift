@@ -13,7 +13,6 @@ class MainMessageViewModel: ObservableObject {
     @Published var user: ChatUser?
     @Published var isLoggedOut: Bool = true
     @Published var recentMessages = [RecentMessage]()
-    @Published var recentMessageUser: ChatUser?
     func fetchCurrentUser() {       // get logged in user information
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
@@ -53,13 +52,6 @@ class MainMessageViewModel: ObservableObject {
                     }
                     let recentMessageData = change.document.data()
                     self.recentMessages.insert(.init(documentID: docID, data: recentMessageData), at: 0)
-                    FirebaseManager.shared.firestore.collection("users").document(recentMessageData["toID"] as! String).getDocument { snapshot, error in
-                        if let error = error {
-                            print("Error fetching recent chat user: \(error)")
-                        }
-                        guard let data = snapshot?.data() else {return}
-                        self.recentMessageUser = .init(data: data)
-                    }
                 })
         }
     }
@@ -70,7 +62,6 @@ struct MainMessagesView: View {
     @State var shouldShowNewMessageScreen = false
     @State var chatUser: ChatUser?
     @State var shouldOpenChatLogView = false
-    @State var recentChatUser: ChatUser?
     private var NavigationBar: some View {      // nav bar
         HStack {
             WebImage(url: URL(string: vm.user?.profileImageUrl ?? ""))
@@ -139,18 +130,20 @@ struct MainMessagesView: View {
             ForEach(vm.recentMessages) { message in
                 VStack {
                     NavigationLink {
-                        Text("Destination")
+                        // FIXME: Navigate to chat log
+                        Text("FIX ME?")
                     } label: {
                         HStack(spacing: 16) {
-                            WebImage(url: URL(string: vm.recentMessageUser?.profileImageUrl ?? ""))
+                            WebImage(url: URL(string: message.profileImageUrl))
                                 .resizable()
                                 .scaledToFill()
                                 .frame(width: 48, height: 48)
                                 .cornerRadius(48)
                                 .clipped()
                                 .overlay(RoundedRectangle(cornerRadius: 48).stroke(Color(.label), lineWidth: 1))
+                                .shadow(radius: 5)
                             VStack(alignment: .leading, spacing: 8) {
-                                Text(vm.recentMessageUser?.email ?? "")
+                                Text(message.email)
                                     .font(.system(size: 16, weight: .bold))
                                     .foregroundColor(Color(.label))
                                     .multilineTextAlignment(.leading)

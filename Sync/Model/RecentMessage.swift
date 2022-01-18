@@ -11,13 +11,15 @@ import Firebase
 struct RecentMessage: Identifiable {
     var id: String {documentID}
     let documentID: String
-    let text, fromID, toID: String
+    let text, fromID, toID, email, profileImageUrl: String
     let timestamp: Timestamp
     init(documentID: String, data: [String: Any]) {
         self.documentID = documentID
         self.text = data["text"] as? String ?? ""
         self.fromID = data["fromID"] as? String ?? ""
         self.toID = data["toID"] as? String ?? ""
+        self.email = data["email"] as? String ?? ""
+        self.profileImageUrl = data["profileImageUrl"] as? String ?? ""
         self.timestamp = data["timestamp"] as? Timestamp ?? Timestamp(date: Date())
     }
 }
