@@ -50,7 +50,7 @@ class ChatLogViewModel: ObservableObject {
             }
         }
     }
-    func handleSend() {
+    func handleSend() {     // chat log into firestore
         print(chatText)
         guard let fromID = FirebaseManager.shared.auth.currentUser?.uid else {return}
         guard let toID = chatUser?.uid else {return}
@@ -60,6 +60,7 @@ class ChatLogViewModel: ObservableObject {
             if let error = error {
                 print("failed to send data1 to firestore: \(error)")
             }
+            self.persistRecentMessage()
         }
         let recipientDocument = FirebaseManager.shared.firestore.collection("messages").document(toID).collection(fromID).document()
         recipientDocument.setData(messageData) { error in
@@ -68,6 +69,31 @@ class ChatLogViewModel: ObservableObject {
             }
             self.count += 1
         }
+    }
+    private func persistRecentMessage() {       // recent messages into firestore
+        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
+        guard let toID = self.chatUser?.uid else {return}
+        let document = FirebaseManager.shared.firestore.collection("recent_messages").document(uid).collection("messages").document(toID)
+        let data = [
+            "timestamp": Timestamp(),
+            "text": self.chatText,
+            "fromID": uid,
+            "toID": toID
+        ] as [String : Any]
+        document.setData(data) { error in
+            if let error = error {
+                print("Failed to save recent message: \(error)")
+                return
+            }
+        }
+        let receiverdocument = FirebaseManager.shared.firestore.collection("recent_messages").document(toID).collection("messages").document(uid)
+        receiverdocument.setData(data) { error in
+            if let error = error {
+                print("Failed to save recent message for the other guy: \(error)")
+                return
+            }
+        }
+        self.chatText = ""
     }
 }
 
@@ -110,7 +136,6 @@ struct ChatLogView: View {
                 )
             Button {
                 vm.handleSend()
-                vm.chatText = ""
             } label: {
                 Text("Send").font(.system(size: 18, weight: .semibold))
             }
