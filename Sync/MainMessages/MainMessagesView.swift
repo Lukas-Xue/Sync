@@ -64,6 +64,7 @@ struct MainMessagesView: View {
     @ObservedObject private var vm = MainMessageViewModel()
     @State var shouldShowNewMessageScreen = false
     @State var chatUser: ChatUser?
+    @State var shouldShowImagePicker = false
     @State var shouldOpenChatLogView = false
     private var NavigationBar: some View {      // nav bar
         HStack {
@@ -176,6 +177,35 @@ struct MainMessagesView: View {
             .padding(.bottom, 50)
         }
     }
+    private var newImageButton: some View {           // create new image
+        Button {
+            shouldShowImagePicker.toggle()
+        } label: {
+            HStack {
+                Spacer()
+                Image(systemName: "photo.circle")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 24, height: 24, alignment: .center)
+                Spacer()
+            }
+            .foregroundColor(.white)
+            .padding(.vertical)
+            .background(Color.blue)
+            .cornerRadius(32)
+            .padding(.horizontal)
+            .shadow(radius: 15)
+        }
+    }
+    private var bottomNavBar: some View {       // bottom nav bar
+        HStack {
+            newMessageButton
+                .frame(maxHeight: 50)
+            Spacer()
+            newImageButton
+                .frame(maxHeight: 50)
+        }
+    }
     
     var body: some View {
         NavigationView {
@@ -185,8 +215,11 @@ struct MainMessagesView: View {
                 NavigationLink("", isActive: $shouldOpenChatLogView) {
                     ChatLogView(chatUser: self.chatUser)
                 }
+                NavigationLink("", isActive: $shouldShowImagePicker) {
+                    ImageSyncView()
+                }
             }
-            .overlay(newMessageButton, alignment: .bottom)
+            .overlay(bottomNavBar, alignment: .bottom)
             .navigationBarHidden(true)
         }
     }
