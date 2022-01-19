@@ -13,6 +13,7 @@ class MainMessageViewModel: ObservableObject {
     @Published var user: ChatUser?
     @Published var isLoggedOut: Bool = true
     @Published var recentMessages = [RecentMessage]()
+    private var firestoreListener: ListenerRegistration?
     func fetchCurrentUser() {       // get logged in user information
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
@@ -32,12 +33,14 @@ class MainMessageViewModel: ObservableObject {
         fetchRecentMessages()
     }
     func handleSignOut() {      // go back to login view
+        firestoreListener?.remove()
         isLoggedOut.toggle()
         try? FirebaseManager.shared.auth.signOut()
     }
-    private func fetchRecentMessages() {        // get recent message
+    func fetchRecentMessages() {        // get recent message
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
-        FirebaseManager.shared.firestore.collection("recent_messages").document(uid).collection("messages").order(by: "timestamp")
+        self.recentMessages.removeAll()
+        firestoreListener = FirebaseManager.shared.firestore.collection("recent_messages").document(uid).collection("messages").order(by: "timestamp")
             .addSnapshotListener { querySnapshot, error in
                 if let error = error {
                     print("Error fetching recent message: \(error)")
@@ -87,7 +90,7 @@ struct MainMessagesView: View {
             }
             Spacer()
             Button(action: {
-                vm.handleSignOut() // FIXME: LOG OUT OPTION
+                vm.handleSignOut()
             }, label: {
                 Image(systemName: "gearshape")
                     .font(.system(size: 20, weight: .thin))
@@ -98,6 +101,7 @@ struct MainMessagesView: View {
             LoginView(didCompleteLogin: {
                 self.vm.isLoggedOut = false
                 self.vm.fetchCurrentUser()
+                self.vm.fetchRecentMessages()
             })
         }
     }
@@ -131,7 +135,11 @@ struct MainMessagesView: View {
                 VStack {
                     NavigationLink {
                         // FIXME: Navigate to chat log
-                        Text("FIX ME?")
+                        ChatLogView(chatUser: ChatUser.init(data: [
+                            "uid": message.toID == FirebaseManager.shared.auth.currentUser?.uid ? message.fromID : message.toID,
+                            "email": message.email,
+                            "profileImageUrl": message.profileImageUrl
+                        ]))
                     } label: {
                         HStack(spacing: 16) {
                             WebImage(url: URL(string: message.profileImageUrl))
@@ -153,7 +161,10 @@ struct MainMessagesView: View {
                                     .multilineTextAlignment(.leading)
                             }
                             Spacer()
-                            Text(message.timestamp.description)
+                            let date = Date(timeIntervalSince1970: TimeInterval(message.timestamp.seconds)).timeIntervalSinceReferenceDate
+                            let currentTime = Date().timeIntervalSinceReferenceDate
+                            let interval = currentTime - date
+                            Text(String(Int(round(interval / 60.0)))+" min. ago")
                                 .font(.system(size: 14, weight: .semibold))
                         }
                     }

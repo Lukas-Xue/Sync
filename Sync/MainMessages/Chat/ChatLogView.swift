@@ -26,6 +26,7 @@ class ChatLogViewModel: ObservableObject {
     @Published var chatMessages = [ChatMessage]()
     @Published var count = 0
     @Published var yourInfo: ChatUser?
+    var firestoreListener: ListenerRegistration?
     let chatUser: ChatUser?
     init(chatUser: ChatUser?) {
         self.chatUser = chatUser
@@ -34,7 +35,7 @@ class ChatLogViewModel: ObservableObject {
     private func fetchMessages() {
         guard let fromID = FirebaseManager.shared.auth.currentUser?.uid else {return}
         guard let toID = chatUser?.uid else {return}
-        FirebaseManager.shared.firestore.collection("messages").document(fromID).collection(toID).order(by: "timestamp").addSnapshotListener { querySnapshot, error in
+        firestoreListener = FirebaseManager.shared.firestore.collection("messages").document(fromID).collection(toID).order(by: "timestamp").addSnapshotListener { querySnapshot, error in
             if let error = error {
                 print("failed to listen for message: \(error)")
                 return
@@ -95,35 +96,37 @@ class ChatLogViewModel: ObservableObject {
             if let error = error {
                 print("Error fetching your information: \(error)")
             }
-            guard let data = snapshot?.data() else {return}
-            self.yourInfo = .init(data: data)
+            guard let yourdata = snapshot?.data() else {return}
+            self.yourInfo = .init(data: yourdata)
         }
         
-        let receiverdata = [
-            "timestamp": Timestamp(),
-            "text": self.chatText,
-            "fromID": uid,
-            "toID": toID,
-            "profileImageUrl": self.yourInfo?.profileImageUrl ?? "",
-            "email": self.yourInfo?.email ?? ""
-        ] as [String : Any]
-        receiverdocument.setData(receiverdata) { error in
-            if let error = error {
-                print("Failed to save recent message for the other guy: \(error)")
-                return
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            let receiverdata = [
+                "timestamp": Timestamp(),
+                "text": self.chatText,
+                "fromID": uid,
+                "toID": toID,
+                "profileImageUrl": self.yourInfo?.profileImageUrl ?? "",
+                "email": self.yourInfo?.email ?? ""
+            ] as [String : Any]
+            receiverdocument.setData(receiverdata) { error in
+                if let error = error {
+                    print("Failed to save recent message for the other guy: \(error)")
+                    return
+                }
             }
+            self.chatText = ""
         }
-        self.chatText = ""
     }
 }
 
 struct ChatLogView: View {
     let chatUser: ChatUser?
-    @FocusState private var isKeyboardOn: Bool
     init(chatUser: ChatUser?) {
         self.chatUser = chatUser
         self.vm = .init(chatUser: chatUser)
     }
+    @FocusState private var isKeyboardOn: Bool
     @ObservedObject var vm: ChatLogViewModel
     private var chatBottomBar: some View {      // text editor and send button
         HStack(spacing: 4) {
@@ -233,6 +236,9 @@ struct ChatLogView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .onDisappear {
+            vm.firestoreListener?.remove()
+        }
     }
 }
 
