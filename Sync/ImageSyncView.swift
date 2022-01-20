@@ -6,14 +6,25 @@
 //
 
 import SwiftUI
+import CoreML
 
 struct ImageSyncView: View {
     @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
     @State private var buttonOffset: CGFloat = 0
     @State var shouldShowImagePicker = false
     @State var image: UIImage?
+    @State var classification: String = ""
+    let model = try? MobileNetV2(configuration: MLModelConfiguration())
     let hapticFeedback = UINotificationFeedbackGenerator()
-    private var slideButton: some View {    // bottom slide sync button, FIXME: on success
+    private func performImageClassification() {
+        let resizedImage = self.image?.resize(to: CGSize(width: 224, height: 224))
+        let buffer = resizedImage?.pixelBuffer()
+        let classification = try? self.model?.prediction(image: buffer!)
+        if let classification = classification {
+            self.classification = classification.classLabel
+        }
+    }
+    private var slideButton: some View {    // FIXME: on success
         ZStack {
             // static background
             Capsule()
@@ -62,7 +73,11 @@ struct ImageSyncView: View {
                                     buttonOffset = buttonWidth - 80
                                     
                                     // FIXME: CoreML + Persist Image to Firebase
-                                    
+                                    if self.image == nil {      // did not pick image
+                                        buttonOffset = 0
+                                    } else {
+                                        self.performImageClassification()
+                                    }
                                 } else {
                                     buttonOffset = 0
                                 }
@@ -96,6 +111,7 @@ struct ImageSyncView: View {
     }
     var body: some View {
         VStack {
+            Text(classification)
             Spacer()
             imagePickerButton
             Spacer()
