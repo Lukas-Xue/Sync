@@ -57,7 +57,7 @@ struct LoginView: View {
     private func persistImageToStorage() {      // save image to storage and save user information
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         let ref = FirebaseManager.shared.storage.reference(withPath: uid)
-        guard let imageData = self.image?.jpegData(compressionQuality: 0.1) else {return}
+        guard let imageData = self.image?.jpegData(compressionQuality: 0.05) else {return}
         ref.putData(imageData, metadata: nil) { metadata, error in
             if let error = error {
                 self.signInError = "Failed to push image to cloud: \(error)"
