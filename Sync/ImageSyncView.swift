@@ -14,6 +14,7 @@ struct ImageSyncView: View {
     @State var shouldShowImagePicker = false
     @State var image: UIImage?
     @State var classification: String = ""
+    @State var shouldShowImageSwipeView = false
     let model = try? MobileNetV2(configuration: MLModelConfiguration())
     let hapticFeedback = UINotificationFeedbackGenerator()
     private func performImageClassification() {
@@ -71,12 +72,16 @@ struct ImageSyncView: View {
                                 if buttonOffset > 2 * buttonWidth / 3 {
                                     hapticFeedback.notificationOccurred(.success)
                                     buttonOffset = buttonWidth - 80
+            
+                                    //                                          FIXME: CoreML + Persist Image to Firebase
                                     
-                                    // FIXME: CoreML + Persist Image to Firebase
                                     if self.image == nil {      // did not pick image
                                         buttonOffset = 0
+                                        self.classification = "select an Image!"
                                     } else {
                                         self.performImageClassification()
+                                        buttonOffset = 0
+                                        shouldShowImageSwipeView.toggle()
                                     }
                                 } else {
                                     buttonOffset = 0
@@ -104,6 +109,7 @@ struct ImageSyncView: View {
                 } else {
                     Image(systemName: "photo") // if not, use default
                         .font(.system(size: 128))
+                        .cornerRadius(20)
                         .padding()
                 }
             }
@@ -118,6 +124,9 @@ struct ImageSyncView: View {
             slideButton
                 .frame(width: buttonWidth, height: 80, alignment: .center)
                 .padding(.bottom, 40)
+//            NavigationLink("", isActive: $shouldShowImageSwipeView) {
+//                ImageSwipeView()
+//            }
         }
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
             ImagePicker(image: $image)
