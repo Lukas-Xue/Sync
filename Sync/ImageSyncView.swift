@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CoreML
+import Firebase
 
 struct ImageSyncView: View {
     @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
@@ -28,7 +29,7 @@ struct ImageSyncView: View {
     private func persistImageToStorage() {      // put sync image into storage
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         let ref = FirebaseManager.shared.storage.reference(withPath: uid)
-        guard let imageData = self.image?.jpegData(compressionQuality: 0.2) else {return}
+        guard let imageData = self.image?.jpegData(compressionQuality: 0.25) else {return}
         ref.putData(imageData, metadata: nil) { metadata, error in
             if let error = error {
                 print("failed to put sync image to cloud: \(error)")
@@ -41,8 +42,8 @@ struct ImageSyncView: View {
                 }
                 guard let url = url else {return}
                 print(url)
-//                self.storeImageUnderUser(image: url)
-//                self.storeImageUnderClass(image: url)
+                self.storeImageUnderUser(image: url)
+                self.storeImageUnderClass(image: url)
             }
         }
     }
@@ -51,29 +52,21 @@ struct ImageSyncView: View {
         let data = [
             "imageUrl": image.absoluteString,
             "uid": uid,
-            "like": 0
+            "like": 0,
+            "timestamp": Timestamp()
         ] as [String : Any]
-        FirebaseManager.shared.firestore.collection("users").document(uid).collection("images").document(image.absoluteString).setData(data) { error in
-            if let error = error {
-                print("Failed to store image under user collection: \(error)")
-                return
-            }
-            print("Successfully put image under user collection")
-        }
+        FirebaseManager.shared.firestore.collection("user_image").document(uid).collection("images").addDocument(data: data)
+        print("Successfully put image under user collection")
     }
     private func storeImageUnderClass(image: URL) {
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         let data = [
             "imageUrl": image.absoluteString,
-            "uid": uid
+            "uid": uid,
+            "timestamp": Timestamp()
         ] as [String : Any]
-        FirebaseManager.shared.firestore.collection("class").document(self.classification).collection("image").document(image.absoluteString).setData(data) { error in
-            if let error = error {
-                print("Failed to store image under class collection: \(error)")
-                return
-            }
-            print("Successfully put image under class collection")
-        }
+        FirebaseManager.shared.firestore.collection("class").document(self.classification).collection("image").addDocument(data: data)
+        print("Successfully put image under class collection")
     }
     private var slideButton: some View {    // FIXME: on success
         ZStack {
@@ -128,9 +121,9 @@ struct ImageSyncView: View {
                                     } else {
                                         self.performImageClassification()
                                         buttonOffset = 0
-//                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-//                                            self.persistImageToStorage()
-//                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                            self.persistImageToStorage()
+                                        }
                                         shouldShowImageSwipeView.toggle()
                                     }
                                 } else {
