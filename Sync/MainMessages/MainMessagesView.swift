@@ -40,6 +40,7 @@ class MainMessageViewModel: ObservableObject {
     func fetchRecentMessages() {        // get recent message
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         self.recentMessages.removeAll()
+        print("Event Listener Added Here, main message view")
         firestoreListener = FirebaseManager.shared.firestore.collection("recent_messages").document(uid).collection("messages").order(by: "timestamp")
             .addSnapshotListener { querySnapshot, error in
                 if let error = error {
@@ -66,6 +67,7 @@ struct MainMessagesView: View {
     @State var chatUser: ChatUser?
     @State var shouldShowImagePicker = false
     @State var shouldOpenChatLogView = false
+    private var chatLogViewModel = ChatLogViewModel(chatUser: nil)
     private var NavigationBar: some View {      // nav bar
         HStack {
             WebImage(url: URL(string: vm.user?.profileImageUrl ?? ""))
@@ -127,6 +129,8 @@ struct MainMessagesView: View {
                 CreateNewMessageView(didSelectNewUser: { user in
                     self.chatUser = user
                     self.shouldOpenChatLogView.toggle()
+                    self.chatLogViewModel.chatUser = user
+                    self.chatLogViewModel.fetchMessages()
                 })
             }
     }
@@ -134,13 +138,15 @@ struct MainMessagesView: View {
         ScrollView {
             ForEach(vm.recentMessages) { message in
                 VStack {
-                    NavigationLink {
-                        // FIXME: Navigate to chat log
-                        ChatLogView(chatUser: ChatUser.init(data: [
+                    Button {
+                        self.chatUser = .init(data: [
                             "uid": message.toID == FirebaseManager.shared.auth.currentUser?.uid ? message.fromID : message.toID,
                             "email": message.email,
                             "profileImageUrl": message.profileImageUrl
-                        ]))
+                        ])
+                        self.chatLogViewModel.chatUser = self.chatUser
+                        self.chatLogViewModel.fetchMessages()
+                        self.shouldOpenChatLogView.toggle()
                     } label: {
                         HStack(spacing: 16) {
                             WebImage(url: URL(string: message.profileImageUrl))
@@ -213,7 +219,7 @@ struct MainMessagesView: View {
                 NavigationBar
                 messageView
                 NavigationLink("", isActive: $shouldOpenChatLogView) {
-                    ChatLogView(chatUser: self.chatUser)
+                    ChatLogView(vm: chatLogViewModel)
                 }
                 NavigationLink("", isActive: $shouldShowImagePicker) {
                     ImageSyncView()

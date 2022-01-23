@@ -27,14 +27,17 @@ class ChatLogViewModel: ObservableObject {
     @Published var count = 0
     @Published var yourInfo: ChatUser?
     var firestoreListener: ListenerRegistration?
-    let chatUser: ChatUser?
+    var chatUser: ChatUser?
     init(chatUser: ChatUser?) {
         self.chatUser = chatUser
         fetchMessages()
     }
-    private func fetchMessages() {
+    func fetchMessages() {
+        print("Event Listener Added Here, chat log view")
         guard let fromID = FirebaseManager.shared.auth.currentUser?.uid else {return}
         guard let toID = chatUser?.uid else {return}
+        firestoreListener?.remove()
+        chatMessages.removeAll()
         firestoreListener = FirebaseManager.shared.firestore.collection("messages").document(fromID).collection(toID).order(by: "timestamp").addSnapshotListener { querySnapshot, error in
             if let error = error {
                 print("failed to listen for message: \(error)")
@@ -100,7 +103,7 @@ class ChatLogViewModel: ObservableObject {
             self.yourInfo = .init(data: yourdata)
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+        DispatchQueue.main.async {
             let receiverdata = [
                 "timestamp": Timestamp(),
                 "text": self.chatText,
@@ -121,11 +124,11 @@ class ChatLogViewModel: ObservableObject {
 }
 
 struct ChatLogView: View {
-    let chatUser: ChatUser?
-    init(chatUser: ChatUser?) {
-        self.chatUser = chatUser
-        self.vm = .init(chatUser: chatUser)
-    }
+//    let chatUser: ChatUser?
+//    init(chatUser: ChatUser?) {
+//        self.chatUser = chatUser
+//        self.vm = .init(chatUser: chatUser)
+//    }
     @FocusState private var isKeyboardOn: Bool
     @ObservedObject var vm: ChatLogViewModel
     private var chatBottomBar: some View {      // text editor and send button
@@ -224,8 +227,8 @@ struct ChatLogView: View {
         .toolbar {      // for name and pfp
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack {
-                    Text(chatUser?.email ?? "")
-                    WebImage(url: URL(string: chatUser?.profileImageUrl ?? ""))
+                    Text(vm.chatUser?.email ?? "")
+                    WebImage(url: URL(string: vm.chatUser?.profileImageUrl ?? ""))
                         .resizable()
                         .scaledToFill()
                         .frame(width: 36, height: 36)
@@ -244,8 +247,6 @@ struct ChatLogView: View {
 
 struct ChatLogView_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
-            ChatLogView(chatUser: .init(data: ["uid": "SUOfGXztVYQz5ruV1N1mnnwSHo93", "email": "lukasxue2023@gmail.com", "profileImageUrl": "https://firebasestorage.googleapis.com:443/v0/b/sync-e63f3.appspot.com/o/SUOfGXztVYQz5ruV1N1mnnwSHo93?alt=media&token=d8b934fc-b129-4f7e-929d-c88ab08217d1"]))
-        }
+        MainMessagesView()
     }
 }
