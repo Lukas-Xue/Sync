@@ -6,9 +6,11 @@
 //
 
 import SwiftUI
+import Firebase
 
 struct ImageSwipeView: View {
     @State var offset: CGSize = .zero
+    let imageClass: String
     func getScaleAmount() -> CGFloat {
         let maxWidth = UIScreen.main.bounds.width / 2
         let currentAmount = abs(offset.width)
@@ -44,6 +46,6 @@ struct ImageSwipeView: View {
 
 struct ImageSwipeView_Previews: PreviewProvider {
     static var previews: some View {
-        ImageSwipeView()
+        ImageSwipeView(imageClass: "desktop computer")
     }
 }

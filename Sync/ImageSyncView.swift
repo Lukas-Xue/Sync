@@ -168,7 +168,7 @@ struct ImageSyncView: View {
                 .frame(width: buttonWidth, height: 80, alignment: .center)
                 .padding(.bottom, 40)
 //            NavigationLink("", isActive: $shouldShowImageSwipeView) {
-//                ImageSwipeView()
+//                ImageSwipeView(imageClass: self.classification)
 //            }
         }
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
