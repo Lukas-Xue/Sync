@@ -23,6 +23,7 @@ struct ChatMessage: Identifiable{
 
 class ChatLogViewModel: ObservableObject {
     @Published var chatText = ""
+    @Published var Text = ""
     @Published var chatMessages = [ChatMessage]()
     @Published var count = 0
     @Published var yourInfo: ChatUser?
@@ -56,7 +57,6 @@ class ChatLogViewModel: ObservableObject {
         }
     }
     func handleSend() {     // chat log into firestore
-        print(chatText)
         guard let fromID = FirebaseManager.shared.auth.currentUser?.uid else {return}
         guard let toID = chatUser?.uid else {return}
         let document = FirebaseManager.shared.firestore.collection("messages").document(fromID).collection(toID).document()
@@ -94,7 +94,6 @@ class ChatLogViewModel: ObservableObject {
             }
         }
         let receiverdocument = FirebaseManager.shared.firestore.collection("recent_messages").document(toID).collection("messages").document(uid)
-        
         FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
             if let error = error {
                 print("Error fetching your information: \(error)")
@@ -103,7 +102,7 @@ class ChatLogViewModel: ObservableObject {
             self.yourInfo = .init(data: yourdata)
         }
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             let receiverdata = [
                 "timestamp": Timestamp(),
                 "text": self.chatText,
@@ -124,23 +123,18 @@ class ChatLogViewModel: ObservableObject {
 }
 
 struct ChatLogView: View {
-//    let chatUser: ChatUser?
-//    init(chatUser: ChatUser?) {
-//        self.chatUser = chatUser
-//        self.vm = .init(chatUser: chatUser)
-//    }
     @FocusState private var isKeyboardOn: Bool
     @ObservedObject var vm: ChatLogViewModel
     private var chatBottomBar: some View {      // text editor and send button
         HStack(spacing: 4) {
             Image(systemName: "photo.on.rectangle.angled")
                 .font(.system(size: 20))
-            Text(vm.chatText.isEmpty ? "Sync now..." : vm.chatText)
+            Text(vm.Text.isEmpty ? "Sync now..." : vm.Text)
                 .font(.body)
                 .padding(.vertical, 8)
                 .padding(.horizontal, 18)
                 .foregroundColor(Color.gray)
-                .opacity(vm.chatText.isEmpty ? 1 : 0)
+                .opacity(vm.Text.isEmpty ? 1 : 0)
                 .frame(maxWidth: .infinity, minHeight: 40, alignment: .leading)
                 .background(
                     RoundedRectangle(cornerRadius: 12)
@@ -148,19 +142,21 @@ struct ChatLogView: View {
                         .padding(.horizontal, 12)
                 )
                 .overlay(
-                    TextEditor(text: $vm.chatText)
+                    TextEditor(text: $vm.Text)
                         .font(.body)
                         .foregroundColor(Color(.label))
                         .multilineTextAlignment(.leading)
                         .cornerRadius(12)
                         .padding(.horizontal, 12)
-                        .opacity(vm.chatText.isEmpty ? 0.6 : 1)
+                        .opacity(vm.Text.isEmpty ? 0.6 : 1)
                         .focused($isKeyboardOn)
                         .onChange(of: isKeyboardOn, perform: { _ in
                             vm.count += 1
                         })
                 )
             Button {
+                vm.chatText = vm.Text
+                vm.Text = ""
                 vm.handleSend()
             } label: {
                 Text("Send").font(.system(size: 18, weight: .semibold))

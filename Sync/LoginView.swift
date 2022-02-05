@@ -76,7 +76,7 @@ struct LoginView: View {
     }
     private func storeUserInformation(imageProfileUrl: URL) {       // save user information to firestore
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
-        let userData = ["email": self.email, "uid": uid, "profileImageUrl": imageProfileUrl.absoluteString]
+        let userData = ["email": self.email, "uid": uid, "profileImageUrl": imageProfileUrl.absoluteString, "pics": 0] as [String : Any]
         FirebaseManager.shared.firestore.collection("users").document(uid).setData(userData) { error in
             if let error = error {
                 self.signInError = "Firestore error: \(error)"

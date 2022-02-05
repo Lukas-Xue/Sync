@@ -16,6 +16,7 @@ struct ImageSyncView: View {
     @State var image: UIImage?
     @State var classification: String = ""
     @State var shouldShowImageSwipeView = false
+    @State var numOfPics: Int = 0
     let model = try? MobileNetV2(configuration: MLModelConfiguration())
     let hapticFeedback = UINotificationFeedbackGenerator()
     private func performImageClassification() {
@@ -28,7 +29,12 @@ struct ImageSyncView: View {
     }
     private func persistImageToStorage() {      // put sync image into storage
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
-        let ref = FirebaseManager.shared.storage.reference(withPath: uid)
+        FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
+            guard let data = snapshot?.data() else {return}
+            self.numOfPics = data["pics"] as! Int + 1
+            FirebaseManager.shared.firestore.collection("users").document(uid).updateData(["pics": numOfPics])
+        }
+        let ref = FirebaseManager.shared.storage.reference(withPath: uid + String(numOfPics))
         guard let imageData = self.image?.jpegData(compressionQuality: 0.25) else {return}
         ref.putData(imageData, metadata: nil) { metadata, error in
             if let error = error {
@@ -121,10 +127,10 @@ struct ImageSyncView: View {
                                     } else {
                                         self.performImageClassification()
                                         buttonOffset = 0
+                                        shouldShowImageSwipeView.toggle()
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             self.persistImageToStorage()
                                         }
-                                        shouldShowImageSwipeView.toggle()
                                     }
                                 } else {
                                     buttonOffset = 0
@@ -167,9 +173,9 @@ struct ImageSyncView: View {
             slideButton
                 .frame(width: buttonWidth, height: 80, alignment: .center)
                 .padding(.bottom, 40)
-//            NavigationLink("", isActive: $shouldShowImageSwipeView) {
-//                ImageSwipeView(imageClass: self.classification)
-//            }
+            NavigationLink("", isActive: $shouldShowImageSwipeView) {
+                ImageSwipeView(imageClass: self.classification)
+            }
         }
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
             ImagePicker(image: $image)
