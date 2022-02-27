@@ -10,6 +10,7 @@ import CoreML
 import Firebase
 
 struct ImageSyncView: View {
+    private var imageSwipeViewModel = ImageSwipeViewModel(imageClass: "")
     @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
     @State private var buttonOffset: CGFloat = 0
     @State var shouldShowImagePicker = false
@@ -127,6 +128,8 @@ struct ImageSyncView: View {
                                     } else {
                                         self.performImageClassification()
                                         buttonOffset = 0
+                                        imageSwipeViewModel.imageClass = self.classification
+                                        imageSwipeViewModel.fetchImages()
                                         shouldShowImageSwipeView.toggle()
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                             self.persistImageToStorage()
@@ -174,7 +177,7 @@ struct ImageSyncView: View {
                 .frame(width: buttonWidth, height: 80, alignment: .center)
                 .padding(.bottom, 40)
             NavigationLink("", isActive: $shouldShowImageSwipeView) {
-                ImageSwipeView(imageClass: self.classification)
+                ImageSwipeView(vm: imageSwipeViewModel)
             }
         }
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {

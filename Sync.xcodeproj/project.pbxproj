@@ -28,6 +28,8 @@
 		80DFAEB82790C40E0037B808 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 80DFAEB72790C40E0037B808 /* FirebaseFirestore */; };
 		80DFAEBA2790C40E0037B808 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 80DFAEB92790C40E0037B808 /* FirebaseStorage */; };
 		80DFAEBD2790CF800037B808 /* MainMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80DFAEBC2790CF800037B808 /* MainMessagesView.swift */; };
+		8BE5C57727CB37680052F22D /* imageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE5C57627CB37680052F22D /* imageModel.swift */; };
+		8BE5C57927CBF7F90052F22D /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE5C57827CBF7F90052F22D /* CardView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +50,8 @@
 		80DFAEAE2790B0240037B808 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		80DFAEB02790B6750037B808 /* ImagePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		80DFAEBC2790CF800037B808 /* MainMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMessagesView.swift; sourceTree = "<group>"; };
+		8BE5C57627CB37680052F22D /* imageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = imageModel.swift; sourceTree = "<group>"; };
+		8BE5C57827CBF7F90052F22D /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +85,7 @@
 			children = (
 				806A1DDD2792657700D8A3D6 /* ChatUser.swift */,
 				80DF97342796883300F79388 /* RecentMessage.swift */,
+				8BE5C57627CB37680052F22D /* imageModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -130,6 +135,7 @@
 				80C1CA58278FD55100D3D372 /* Assets.xcassets */,
 				80C1CA5A278FD55100D3D372 /* Preview Content */,
 				809F3CA1279879D100FB1FC1 /* ImageSyncView.swift */,
+				8BE5C57827CBF7F90052F22D /* CardView.swift */,
 				80CEA61C2799108600377F9C /* ImageSwipeView.swift */,
 			);
 			path = Sync;
@@ -238,6 +244,8 @@
 				806A1DDE2792657700D8A3D6 /* ChatUser.swift in Sources */,
 				80CEA61B2798DE0600377F9C /* resize&toBuffer.swift in Sources */,
 				806A1DE42793985C00D8A3D6 /* ChatLogView.swift in Sources */,
+				8BE5C57727CB37680052F22D /* imageModel.swift in Sources */,
+				8BE5C57927CBF7F90052F22D /* CardView.swift in Sources */,
 				80DF97352796883300F79388 /* RecentMessage.swift in Sources */,
 				80CEA6192798D83200377F9C /* MobileNetV2.mlkitmodel in Sources */,
 				80DFAEB12790B6760037B808 /* ImagePicker.swift in Sources */,
