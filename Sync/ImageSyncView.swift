@@ -53,7 +53,7 @@ struct ImageSyncView: View {
             }
         }
     }
-    private func storeImageUnderUser(image: URL) {
+    private func storeImageUnderUser(image: URL) {      // image stored under user_image
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         let data = [
             "imageUrl": image.absoluteString,
@@ -64,7 +64,7 @@ struct ImageSyncView: View {
         FirebaseManager.shared.firestore.collection("user_image").document(uid).collection("images").addDocument(data: data)
         print("Successfully put image under user collection")
     }
-    private func storeImageUnderClass(image: URL) {
+    private func storeImageUnderClass(image: URL) {     // image stored under class
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         let data = [
             "imageUrl": image.absoluteString,
