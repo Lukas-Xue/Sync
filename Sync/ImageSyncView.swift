@@ -128,6 +128,7 @@ struct ImageSyncView: View {
                                     } else {
                                         self.performImageClassification()
                                         buttonOffset = 0
+                                        imageSwipeViewModel.allImages = [imageModel]()
                                         imageSwipeViewModel.imageClass = self.classification
                                         imageSwipeViewModel.fetchImages()
                                         shouldShowImageSwipeView.toggle()

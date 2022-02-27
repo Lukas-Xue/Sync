@@ -39,19 +39,6 @@ class ImageSwipeViewModel: ObservableObject {
 
 struct ImageSwipeView: View {
     @ObservedObject var vm: ImageSwipeViewModel
-    @State var offset: CGSize = .zero
-    func getScaleAmount() -> CGFloat {              // scale
-        let maxWidth = UIScreen.main.bounds.width / 2
-        let currentAmount = abs(offset.width)
-        let percentage = currentAmount / maxWidth
-        return 1.0 - min(percentage, 0.5) * 0.5
-    }
-    func getRotationAmount() -> CGFloat {       // rotate
-        let maxWidth = UIScreen.main.bounds.width / 2
-        let currentAmount = offset.width
-        let percentage = Double(currentAmount / maxWidth)
-        return percentage * 10
-    }
     private var likeButton: some View {             // like button
         Button(action: {
             
@@ -71,31 +58,11 @@ struct ImageSwipeView: View {
             .shadow(radius: 20)
         })
     }
-    private var imageFrame: some View {             // image frame
-        RoundedRectangle(cornerRadius: 20)
-            .frame(width: 300, height: 500)
-            .offset(offset)
-            .scaleEffect(getScaleAmount())
-            .rotationEffect(Angle(degrees: getRotationAmount()))
-            .gesture(
-                DragGesture()
-                    .onChanged({ value in
-                        withAnimation(.spring()) {
-                            offset = value.translation
-                        }
-                    })
-                    .onEnded({ value in
-                        withAnimation(.spring()) {
-                            offset = .zero
-                        }
-                }))
-    }
     var body: some View {
         VStack {
-            Spacer()
             ZStack {
                 ForEach(vm.allImages) { classImage in
-                    CardView(card: classImage).padding(8)
+                    CardView(card: classImage).padding(12)
                 }
             }
             Spacer()
