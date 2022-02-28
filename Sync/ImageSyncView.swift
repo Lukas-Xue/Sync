@@ -18,6 +18,7 @@ struct ImageSyncView: View {
     @State var classification: String = ""
     @State var shouldShowImageSwipeView = false
     @State var numOfPics: Int = 0
+    @State var user: ChatUser?
     let model = try? MobileNetV2(configuration: MLModelConfiguration())
     let hapticFeedback = UINotificationFeedbackGenerator()
     private func performImageClassification() {
@@ -67,15 +68,23 @@ struct ImageSyncView: View {
     }
     private func storeImageUnderClass(image: URL) {     // image stored under class
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
+        FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { document, error in
+            if let error = error {
+                print("error storing image under class: \(error)")
+            }
+            self.user = .init(data: (document?.data())!)
+        }
         let data = [
             "imageUrl": image.absoluteString,
             "uid": uid,
-            "timestamp": Timestamp()
+            "timestamp": Timestamp(),
+            "userImageUrl": self.user?.profileImageUrl ?? "",
+            "userEmail": self.user?.email ?? ""
         ] as [String : Any]
         FirebaseManager.shared.firestore.collection("class").document(self.classification).collection("image").addDocument(data: data)
         print("Successfully put image under class collection")
     }
-    private var slideButton: some View {    // FIXME: on success
+    private var slideButton: some View {
         ZStack {
             // static background
             Capsule()

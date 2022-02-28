@@ -48,11 +48,11 @@ struct CardView: View {
                         .onEnded({ value in
                             withAnimation(.spring()) {
                                 switch value.translation.width {
-                                case (-175)...(175):
+                                case (-200)...(200):
                                     offset = .zero
-                                case let x where x > 175:
+                                case let x where x > 200:
                                     offset.width = 800
-                                case let x where x < -175:
+                                case let x where x < -200:
                                     offset.width = -800
                                 default: offset = .zero
                                 }
@@ -63,6 +63,17 @@ struct CardView: View {
                 .frame(alignment: .center)
                 .background(.ultraThinMaterial)
                 .opacity(getOpacity())
+            VStack(alignment: .leading) {
+                Spacer()
+                WebImage(url: URL(string: self.card.userImageUrl))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 36, height: 36)
+                    .clipped()
+                    .cornerRadius(36)
+                    .overlay(RoundedRectangle(cornerRadius: 55).stroke(Color(.label), lineWidth: 1))
+                Text(self.card.userEmail)
+            }
         }
     }
 }
