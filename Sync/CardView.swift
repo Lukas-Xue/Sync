@@ -38,6 +38,7 @@ struct CardView: View {
                 .offset(offset)
                 .scaleEffect(getScaleAmount())
                 .rotationEffect(Angle(degrees: getRotationAmount()))
+                .opacity(getOpacity())
                 .gesture(
                     DragGesture()
                         .onChanged({ value in
@@ -51,29 +52,38 @@ struct CardView: View {
                                 case (-200)...(200):
                                     offset = .zero
                                 case let x where x > 200:
-                                    offset.width = 800
+                                    offset.width = 1300
                                 case let x where x < -200:
-                                    offset.width = -800
+                                    offset.width = -1300
                                 default: offset = .zero
                                 }
                             }
                     }))
                 .zIndex(1)
+            HStack {
+                VStack(alignment: .leading) {
+                    Spacer()
+                    WebImage(url: URL(string: self.card.userImageUrl))
+                        .resizable()
+                        .scaledToFill()
+                        .frame(width: 40, height: 40)
+                        .clipped()
+                        .cornerRadius(40)
+                        .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color(.label), lineWidth: 1))
+                    Text(self.card.userEmail)
+                        .foregroundColor(.white)
+                        .fontWeight(.bold)
+                }
+                .padding(.bottom, 60)
+                .padding(.leading, 20)
+                .opacity(getOpacity())
+                Spacer()
+            }
+            .zIndex(2)
             RoundedRectangle(cornerRadius: 12)
                 .frame(alignment: .center)
-                .background(.ultraThinMaterial)
+                .foregroundColor(.white)
                 .opacity(getOpacity())
-            VStack(alignment: .leading) {
-                Spacer()
-                WebImage(url: URL(string: self.card.userImageUrl))
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: 36, height: 36)
-                    .clipped()
-                    .cornerRadius(36)
-                    .overlay(RoundedRectangle(cornerRadius: 55).stroke(Color(.label), lineWidth: 1))
-                Text(self.card.userEmail)
-            }
         }
     }
 }

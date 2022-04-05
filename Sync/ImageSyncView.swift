@@ -49,7 +49,6 @@ struct ImageSyncView: View {
                     return
                 }
                 guard let url = url else {return}
-                print(url)
                 self.storeImageUnderUser(image: url)
                 self.storeImageUnderClass(image: url)
             }
@@ -74,15 +73,17 @@ struct ImageSyncView: View {
             }
             self.user = .init(data: (document?.data())!)
         }
-        let data = [
-            "imageUrl": image.absoluteString,
-            "uid": uid,
-            "timestamp": Timestamp(),
-            "userImageUrl": self.user?.profileImageUrl ?? "",
-            "userEmail": self.user?.email ?? ""
-        ] as [String : Any]
-        FirebaseManager.shared.firestore.collection("class").document(self.classification).collection("image").addDocument(data: data)
-        print("Successfully put image under class collection")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            let data = [
+                "imageUrl": image.absoluteString,
+                "uid": uid,
+                "timestamp": Timestamp(),
+                "userImageUrl": self.user?.profileImageUrl ?? "",
+                "userEmail": self.user?.email ?? ""
+            ] as [String : Any]
+            FirebaseManager.shared.firestore.collection("class").document(self.classification).collection("image").addDocument(data: data)
+            print("Successfully put image under class collection")
+        }
     }
     private var slideButton: some View {
         ZStack {
