@@ -213,24 +213,36 @@ struct ChatLogView: View {
                 .background(.ultraThinMaterial)
         }
     }
+    @State var shouldOpenProfilePage = false
+    var profilePageViewModel = ProfilePageViewModel(UserProfile: nil)
     var body: some View {
         VStack {
             messageView
                 .onAppear {
                     UIScrollView.appearance().keyboardDismissMode = .onDrag
                 }
+            NavigationLink("", isActive: $shouldOpenProfilePage) {
+                ProfilePageView(vm: self.profilePageViewModel)
+            }
         }
         .toolbar {      // for name and pfp
             ToolbarItem(placement: .navigationBarTrailing) {
                 HStack {
                     Text(vm.chatUser?.email ?? "")
-                    WebImage(url: URL(string: vm.chatUser?.profileImageUrl ?? ""))
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 36, height: 36)
-                        .clipped()
-                        .cornerRadius(36)
-                        .overlay(RoundedRectangle(cornerRadius: 55).stroke(Color(.label), lineWidth: 1))
+                    Button {
+                        self.profilePageViewModel.UserProfile = self.vm.chatUser
+                        self.profilePageViewModel.allImages = [imageModel]()
+                        self.profilePageViewModel.fetchAllImages()
+                        self.shouldOpenProfilePage.toggle()
+                    } label: {
+                        WebImage(url: URL(string: vm.chatUser?.profileImageUrl ?? ""))
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 36, height: 36)
+                            .clipped()
+                            .cornerRadius(36)
+                            .overlay(RoundedRectangle(cornerRadius: 55).stroke(Color(.label), lineWidth: 1))
+                    }
                 }
             }
         }

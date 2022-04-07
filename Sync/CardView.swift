@@ -10,6 +10,8 @@ import Firebase
 import SDWebImageSwiftUI
 
 struct CardView: View {
+    @State var shouldOpenProfilePage = false
+    var profilePageViewModel = ProfilePageViewModel(UserProfile: nil)
     let card: imageModel
     @State var offset: CGSize = .zero
     func getScaleAmount() -> CGFloat {              // scale
@@ -63,19 +65,31 @@ struct CardView: View {
             HStack {
                 VStack(alignment: .leading) {
                     Spacer()
-                    WebImage(url: URL(string: self.card.userImageUrl))
-                        .resizable()
-                        .scaledToFill()
-                        .frame(width: 40, height: 40)
-                        .clipped()
-                        .cornerRadius(40)
-                        .overlay(RoundedRectangle(cornerRadius: 40).stroke(Color(.label), lineWidth: 1))
+                    Button {
+                        shouldOpenProfilePage.toggle()
+                        self.profilePageViewModel.UserProfile = .init(data:
+                                                                ["uid": card.uid,
+                                                                 "email": card.userEmail,
+                                                                 "profileImageUrl": card.userImageUrl])
+                        self.profilePageViewModel.fetchAllImages()
+                    } label: {
+                        WebImage(url: URL(string: self.card.userImageUrl))
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 60, height: 60)
+                            .clipped()
+                            .cornerRadius(60)
+                            .overlay(RoundedRectangle(cornerRadius: 60).stroke(Color(.label), lineWidth: 1))
+                    }
                     Text(self.card.userEmail)
-                        .foregroundColor(.white)
+                        .foregroundColor(.blue)
                         .fontWeight(.bold)
+                    NavigationLink("", isActive: $shouldOpenProfilePage) {
+                        ProfilePageView(vm: self.profilePageViewModel)
+                    }
                 }
                 .padding(.bottom, 60)
-                .padding(.leading, 20)
+                .padding(.leading, 30)
                 .opacity(getOpacity())
                 Spacer()
             }

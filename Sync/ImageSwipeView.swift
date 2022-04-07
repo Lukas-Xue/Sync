@@ -39,25 +39,25 @@ class ImageSwipeViewModel: ObservableObject {
 
 struct ImageSwipeView: View {
     @ObservedObject var vm: ImageSwipeViewModel
-    private var likeButton: some View {             // like button
-        Button(action: {
-            
-        }, label: {
-            HStack {
-                Spacer()
-                Image(systemName: "hand.thumbsup.fill")
-                    .font(.system(size: 24, weight: .bold))
-                Spacer()
-            }
-            .foregroundColor(.white)
-            .padding(.vertical)
-            .padding()
-            .background(Color.blue)
-            .frame(width: 64, height: 64, alignment: .center)
-            .cornerRadius(32)
-            .shadow(radius: 20)
-        })
-    }
+//    private var likeButton: some View {             // like button
+//        Button(action: {
+//
+//        }, label: {
+//            HStack {
+//                Spacer()
+//                Image(systemName: "hand.thumbsup.fill")
+//                    .font(.system(size: 24, weight: .bold))
+//                Spacer()
+//            }
+//            .foregroundColor(.white)
+//            .padding(.vertical)
+//            .padding()
+//            .background(Color.blue)
+//            .frame(width: 64, height: 64, alignment: .center)
+//            .cornerRadius(32)
+//            .shadow(radius: 20)
+//        })
+//    }
     var body: some View {
         VStack {
             ZStack {
@@ -65,8 +65,6 @@ struct ImageSwipeView: View {
                     CardView(card: classImage).padding(12)
                 }
             }
-            Spacer()
-            likeButton
             Spacer()
         }
     }
