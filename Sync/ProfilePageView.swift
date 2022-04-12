@@ -111,6 +111,7 @@ struct ProfilePageView: View {
                 ChatLogView(vm: chatLogViewModel)
             }
         }
+        .navigationBarTitle("", displayMode: .inline)
     }
 }
 

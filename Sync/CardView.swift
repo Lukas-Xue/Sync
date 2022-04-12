@@ -82,8 +82,10 @@ struct CardView: View {
                             .overlay(RoundedRectangle(cornerRadius: 60).stroke(Color(.label), lineWidth: 1))
                     }
                     Text(self.card.userEmail)
-                        .foregroundColor(.blue)
+                        .foregroundColor(.white)
                         .fontWeight(.bold)
+                        .padding(8)
+                        .background(.ultraThinMaterial)
                     NavigationLink("", isActive: $shouldOpenProfilePage) {
                         ProfilePageView(vm: self.profilePageViewModel)
                     }

@@ -67,6 +67,7 @@ struct ImageSwipeView: View {
             }
             Spacer()
         }
+        .navigationBarTitle("", displayMode: .inline)
     }
 }
 
