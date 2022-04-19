@@ -29,6 +29,7 @@
 		80DFAEBA2790C40E0037B808 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 80DFAEB92790C40E0037B808 /* FirebaseStorage */; };
 		80DFAEBD2790CF800037B808 /* MainMessagesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80DFAEBC2790CF800037B808 /* MainMessagesView.swift */; };
 		8B62D47A27FC103F00E76426 /* ProfilePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B62D47927FC103F00E76426 /* ProfilePageView.swift */; };
+		8BB7B7C1280E17A600C5B2FC /* NavigationViewKit in Frameworks */ = {isa = PBXBuildFile; productRef = 8BB7B7C0280E17A600C5B2FC /* NavigationViewKit */; };
 		8BE5C57727CB37680052F22D /* imageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE5C57627CB37680052F22D /* imageModel.swift */; };
 		8BE5C57927CBF7F90052F22D /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8BE5C57827CBF7F90052F22D /* CardView.swift */; };
 /* End PBXBuildFile section */
@@ -39,7 +40,7 @@
 		806A1DE027927AE100D8A3D6 /* CreateNewMessageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateNewMessageView.swift; sourceTree = "<group>"; };
 		806A1DE32793985C00D8A3D6 /* ChatLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatLogView.swift; sourceTree = "<group>"; };
 		809F3CA1279879D100FB1FC1 /* ImageSyncView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSyncView.swift; sourceTree = "<group>"; };
-		80C1CA51278FD54D00D3D372 /* Sync.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Sync.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		80C1CA51278FD54D00D3D372 /* Syncing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Syncing.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		80C1CA54278FD54D00D3D372 /* SyncApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncApp.swift; sourceTree = "<group>"; };
 		80C1CA56278FD54D00D3D372 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		80C1CA58278FD55100D3D372 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -63,6 +64,7 @@
 			files = (
 				806A1DDB27922E2900D8A3D6 /* SDWebImageSwiftUI in Frameworks */,
 				80DFAEB42790C40E0037B808 /* FirebaseAnalytics in Frameworks */,
+				8BB7B7C1280E17A600C5B2FC /* NavigationViewKit in Frameworks */,
 				80DFAEBA2790C40E0037B808 /* FirebaseStorage in Frameworks */,
 				80DFAEB62790C40E0037B808 /* FirebaseAuth in Frameworks */,
 				80DFAEB82790C40E0037B808 /* FirebaseFirestore in Frameworks */,
@@ -111,7 +113,7 @@
 		80C1CA48278FD54D00D3D372 = {
 			isa = PBXGroup;
 			children = (
-				80C1CA53278FD54D00D3D372 /* Sync */,
+				80C1CA53278FD54D00D3D372 /* Syncing */,
 				80C1CA52278FD54D00D3D372 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -119,12 +121,12 @@
 		80C1CA52278FD54D00D3D372 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				80C1CA51278FD54D00D3D372 /* Sync.app */,
+				80C1CA51278FD54D00D3D372 /* Syncing.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		80C1CA53278FD54D00D3D372 /* Sync */ = {
+		80C1CA53278FD54D00D3D372 /* Syncing */ = {
 			isa = PBXGroup;
 			children = (
 				80CEA6182798D83200377F9C /* MobileNetV2.mlkitmodel */,
@@ -141,7 +143,7 @@
 				80CEA61C2799108600377F9C /* ImageSwipeView.swift */,
 				8B62D47927FC103F00E76426 /* ProfilePageView.swift */,
 			);
-			path = Sync;
+			path = Syncing;
 			sourceTree = "<group>";
 		};
 		80C1CA5A278FD55100D3D372 /* Preview Content */ = {
@@ -165,9 +167,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		80C1CA50278FD54D00D3D372 /* Sync */ = {
+		80C1CA50278FD54D00D3D372 /* Syncing */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 80C1CA5F278FD55100D3D372 /* Build configuration list for PBXNativeTarget "Sync" */;
+			buildConfigurationList = 80C1CA5F278FD55100D3D372 /* Build configuration list for PBXNativeTarget "Syncing" */;
 			buildPhases = (
 				80C1CA4D278FD54D00D3D372 /* Sources */,
 				80C1CA4E278FD54D00D3D372 /* Frameworks */,
@@ -177,16 +179,17 @@
 			);
 			dependencies = (
 			);
-			name = Sync;
+			name = Syncing;
 			packageProductDependencies = (
 				80DFAEB32790C40E0037B808 /* FirebaseAnalytics */,
 				80DFAEB52790C40E0037B808 /* FirebaseAuth */,
 				80DFAEB72790C40E0037B808 /* FirebaseFirestore */,
 				80DFAEB92790C40E0037B808 /* FirebaseStorage */,
 				806A1DDA27922E2900D8A3D6 /* SDWebImageSwiftUI */,
+				8BB7B7C0280E17A600C5B2FC /* NavigationViewKit */,
 			);
 			productName = Sync;
-			productReference = 80C1CA51278FD54D00D3D372 /* Sync.app */;
+			productReference = 80C1CA51278FD54D00D3D372 /* Syncing.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -204,7 +207,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 80C1CA4C278FD54D00D3D372 /* Build configuration list for PBXProject "Sync" */;
+			buildConfigurationList = 80C1CA4C278FD54D00D3D372 /* Build configuration list for PBXProject "Syncing" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -216,12 +219,13 @@
 			packageReferences = (
 				80DFAEB22790C40E0037B808 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				806A1DD927922E2800D8A3D6 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				8BB7B7BF280E17A600C5B2FC /* XCRemoteSwiftPackageReference "NavigationViewKit" */,
 			);
 			productRefGroup = 80C1CA52278FD54D00D3D372 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				80C1CA50278FD54D00D3D372 /* Sync */,
+				80C1CA50278FD54D00D3D372 /* Syncing */,
 			);
 		};
 /* End PBXProject section */
@@ -389,7 +393,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Sync/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Syncing/Preview Content\"";
 				DEVELOPMENT_TEAM = FWG8NWST94;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -404,8 +408,8 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lucademy.Sync;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucademy.syncc;
+				PRODUCT_NAME = Syncing;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -419,7 +423,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"Sync/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Syncing/Preview Content\"";
 				DEVELOPMENT_TEAM = FWG8NWST94;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -434,8 +438,8 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.lucademy.Sync;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.lucademy.syncc;
+				PRODUCT_NAME = Syncing;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -445,7 +449,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		80C1CA4C278FD54D00D3D372 /* Build configuration list for PBXProject "Sync" */ = {
+		80C1CA4C278FD54D00D3D372 /* Build configuration list for PBXProject "Syncing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				80C1CA5D278FD55100D3D372 /* Debug */,
@@ -454,7 +458,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		80C1CA5F278FD55100D3D372 /* Build configuration list for PBXNativeTarget "Sync" */ = {
+		80C1CA5F278FD55100D3D372 /* Build configuration list for PBXNativeTarget "Syncing" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				80C1CA60278FD55100D3D372 /* Debug */,
@@ -480,6 +484,14 @@
 			requirement = {
 				branch = master;
 				kind = branch;
+			};
+		};
+		8BB7B7BF280E17A600C5B2FC /* XCRemoteSwiftPackageReference "NavigationViewKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fatbobman/NavigationViewKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.5;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -509,6 +521,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 80DFAEB22790C40E0037B808 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		8BB7B7C0280E17A600C5B2FC /* NavigationViewKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8BB7B7BF280E17A600C5B2FC /* XCRemoteSwiftPackageReference "NavigationViewKit" */;
+			productName = NavigationViewKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

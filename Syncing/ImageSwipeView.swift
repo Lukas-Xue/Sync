@@ -39,30 +39,12 @@ class ImageSwipeViewModel: ObservableObject {
 
 struct ImageSwipeView: View {
     @ObservedObject var vm: ImageSwipeViewModel
-//    private var likeButton: some View {             // like button
-//        Button(action: {
-//
-//        }, label: {
-//            HStack {
-//                Spacer()
-//                Image(systemName: "hand.thumbsup.fill")
-//                    .font(.system(size: 24, weight: .bold))
-//                Spacer()
-//            }
-//            .foregroundColor(.white)
-//            .padding(.vertical)
-//            .padding()
-//            .background(Color.blue)
-//            .frame(width: 64, height: 64, alignment: .center)
-//            .cornerRadius(32)
-//            .shadow(radius: 20)
-//        })
-//    }
+    @Binding var chatUser: ChatUser?         // Added Binding!!!!!!!!!!!!
     var body: some View {
         VStack {
             ZStack {
                 ForEach(vm.allImages) { classImage in
-                    CardView(card: classImage).padding(12)
+                    CardView(chatUser: $chatUser, card: classImage).padding(12)
                 }
             }
             Spacer()
@@ -73,6 +55,6 @@ struct ImageSwipeView: View {
 
 struct ImageSwipeView_Previews: PreviewProvider {
     static var previews: some View {
-        ImageSyncView()
+        MainMessagesView()
     }
 }

@@ -8,6 +8,7 @@
 import SwiftUI
 import SDWebImageSwiftUI
 import Firebase
+import NavigationViewKit
 
 class MainMessageViewModel: ObservableObject {
     @Published var user: ChatUser?
@@ -67,7 +68,7 @@ struct MainMessagesView: View {
     @State var chatUser: ChatUser?
     @State var shouldShowImagePicker = false
     @State var shouldOpenChatLogView = false
-    private var chatLogViewModel = ChatLogViewModel(chatUser: nil)
+    public var chatLogViewModel = ChatLogViewModel(chatUser: nil)
     private var NavigationBar: some View {      // nav bar
         HStack {
             WebImage(url: URL(string: vm.user?.profileImageUrl ?? ""))
@@ -219,15 +220,26 @@ struct MainMessagesView: View {
                 NavigationBar
                 messageView
                 NavigationLink("", isActive: $shouldOpenChatLogView) {
-                    ChatLogView(vm: chatLogViewModel)
+                    ChatLogView(chatUser: $chatUser, vm: chatLogViewModel)
                 }
+                .navigationViewStyle(.stack)
                 NavigationLink("", isActive: $shouldShowImagePicker) {
-                    ImageSyncView()
+                    ImageSyncView(chatUser: $chatUser)
+                }
+                NavigationLink(destination: EmptyView()) {
+                    EmptyView()
                 }
             }
             .overlay(bottomNavBar, alignment: .bottom)
             .navigationBarHidden(true)
         }
+        .navigationViewManager(for: "nv1", afterBackDo: {
+            self.chatLogViewModel.chatUser = self.chatUser
+            self.chatLogViewModel.fetchMessages()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
+                self.shouldOpenChatLogView.toggle()
+            }
+        })
     }
 }
 

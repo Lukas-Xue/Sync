@@ -8,6 +8,7 @@
 import SwiftUI
 import SDWebImageSwiftUI
 import Firebase
+import NavigationViewKit
 
 class ProfilePageViewModel: ObservableObject {
     @Published var UserProfile: ChatUser?
@@ -32,7 +33,11 @@ class ProfilePageViewModel: ObservableObject {
 }
 
 struct ProfilePageView: View {
+    @Binding var chatUser: ChatUser?            // ADDED BINDING!!
+    @Environment(\.navigationManager) var nvmanager
     @ObservedObject var vm: ProfilePageViewModel
+    @State var fromWhichView: Bool
+    @Environment(\.dismiss) var dismiss
     @State var shouldOpenChatLogView = false
     var chatLogViewModel = ChatLogViewModel(chatUser: nil)
     var body: some View {
@@ -52,9 +57,14 @@ struct ProfilePageView: View {
                     VStack {
                         Spacer()
                         Button {
-                            shouldOpenChatLogView.toggle()
                             self.chatLogViewModel.chatUser = vm.UserProfile
                             self.chatLogViewModel.fetchMessages()
+                            if fromWhichView {
+                                dismiss()
+                            } else {
+                                chatUser = vm.UserProfile
+                                nvmanager.wrappedValue.popToRoot(tag:"nv1")
+                            }
                         } label: {
                             HStack {
                                 Image(systemName: "message")
@@ -108,10 +118,13 @@ struct ProfilePageView: View {
                 }
             }
             NavigationLink("", isActive: $shouldOpenChatLogView) {
-                ChatLogView(vm: chatLogViewModel)
+                ChatLogView(chatUser: $chatUser, vm: chatLogViewModel)
+                    .navigationBarTitleDisplayMode(.large)
+            }
+            NavigationLink(destination: EmptyView()) {
+                EmptyView()
             }
         }
-        .navigationBarTitle("", displayMode: .inline)
     }
 }
 

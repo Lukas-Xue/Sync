@@ -10,6 +10,7 @@ import Firebase
 import SDWebImageSwiftUI
 
 struct CardView: View {
+    @Binding var chatUser: ChatUser?
     @State var shouldOpenProfilePage = false
     var profilePageViewModel = ProfilePageViewModel(UserProfile: nil)
     let card: imageModel
@@ -87,7 +88,10 @@ struct CardView: View {
                         .padding(8)
                         .background(.ultraThinMaterial)
                     NavigationLink("", isActive: $shouldOpenProfilePage) {
-                        ProfilePageView(vm: self.profilePageViewModel)
+                        ProfilePageView(chatUser: $chatUser, vm: self.profilePageViewModel, fromWhichView: false)
+                    }
+                    NavigationLink(destination: EmptyView()) {
+                        EmptyView()
                     }
                 }
                 .padding(.bottom, 60)
@@ -106,8 +110,6 @@ struct CardView: View {
 
 struct CardView_Previews: PreviewProvider {
     static var previews: some View {
-        CardView(card: .init(documentID: "3B1JTMWRdojEKW4cXw3q", data: ["imageUrl": "https://firebasestorage.googleapis.com:443/v0/b/sync-e63f3.appspot.com/o/hY42rOfpqJScIgDF899S7MOzpaE20?alt=media&token=bc93a850-f41e-4fb2-9e6e-43ebccdebd4b",
-                                                                      "timestamp": "February 27, 2022 at 2:02:44 AM UTC-5",
-                                                                        "uid":"hY42rOfpqJScIgDF899S7MOzpaE2"]))
+        MainMessagesView()
     }
 }

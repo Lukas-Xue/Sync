@@ -124,6 +124,7 @@ class ChatLogViewModel: ObservableObject {
 
 struct ChatLogView: View {
     @FocusState private var isKeyboardOn: Bool
+    @Binding var chatUser: ChatUser?            // ADDED BINDING!!
     @ObservedObject var vm: ChatLogViewModel
     private var chatBottomBar: some View {      // text editor and send button
         HStack(spacing: 4) {
@@ -222,7 +223,10 @@ struct ChatLogView: View {
                     UIScrollView.appearance().keyboardDismissMode = .onDrag
                 }
             NavigationLink("", isActive: $shouldOpenProfilePage) {
-                ProfilePageView(vm: self.profilePageViewModel)
+                ProfilePageView(chatUser: $chatUser, vm: self.profilePageViewModel, fromWhichView: true)
+            }
+            NavigationLink(destination: EmptyView()) {
+                EmptyView()
             }
         }
         .toolbar {      // for name and pfp
@@ -247,9 +251,6 @@ struct ChatLogView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
-        .onDisappear {
-            vm.firestoreListener?.remove()
-        }
     }
 }
 

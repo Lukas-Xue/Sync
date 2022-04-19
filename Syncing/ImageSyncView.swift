@@ -10,7 +10,7 @@ import CoreML
 import Firebase
 
 struct ImageSyncView: View {
-    private var imageSwipeViewModel = ImageSwipeViewModel(imageClass: "")
+    public var imageSwipeViewModel = ImageSwipeViewModel(imageClass: "")
     @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
     @State private var buttonOffset: CGFloat = 0
     @State var shouldShowImagePicker = false
@@ -19,9 +19,10 @@ struct ImageSyncView: View {
     @State var shouldShowImageSwipeView = false
     @State var numOfPics: Int = 0
     @State var user: ChatUser?
+    @Binding var chatUser: ChatUser?         // Added Binding!!!!!!!!!!!!
     let model = try? MobileNetV2(configuration: MLModelConfiguration())
     let hapticFeedback = UINotificationFeedbackGenerator()
-    private func performImageClassification() {
+    public func performImageClassification() {
         let resizedImage = self.image?.resize(to: CGSize(width: 224, height: 224))
         let buffer = resizedImage?.pixelBuffer()
         let classification = try? self.model?.prediction(image: buffer!)
@@ -29,7 +30,7 @@ struct ImageSyncView: View {
             self.classification = classification.classLabel
         }
     }
-    private func persistImageToStorage() {      // put sync image into storage
+    public func persistImageToStorage() {      // put sync image into storage
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { snapshot, error in
             guard let data = snapshot?.data() else {return}
@@ -54,7 +55,7 @@ struct ImageSyncView: View {
             }
         }
     }
-    private func storeImageUnderUser(image: URL) {      // image stored under user_image
+    public func storeImageUnderUser(image: URL) {      // image stored under user_image
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         let data = [
             "imageUrl": image.absoluteString,
@@ -65,7 +66,7 @@ struct ImageSyncView: View {
         FirebaseManager.shared.firestore.collection("user_image").document(uid).collection("images").addDocument(data: data)
         print("Successfully put image under user collection")
     }
-    private func storeImageUnderClass(image: URL) {     // image stored under class
+    public func storeImageUnderClass(image: URL) {     // image stored under class
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else {return}
         FirebaseManager.shared.firestore.collection("users").document(uid).getDocument { document, error in
             if let error = error {
@@ -85,7 +86,7 @@ struct ImageSyncView: View {
             print("Successfully put image under class collection")
         }
     }
-    private var slideButton: some View {
+    public var slideButton: some View {
         ZStack {
             // static background
             Capsule()
@@ -156,7 +157,7 @@ struct ImageSyncView: View {
             }
         }
     }
-    private var imagePickerButton: some View {  // image picker button
+    public var imagePickerButton: some View {  // image picker button
         Button {
             shouldShowImagePicker.toggle()
         } label: {
@@ -188,7 +189,7 @@ struct ImageSyncView: View {
                 .frame(width: buttonWidth, height: 80, alignment: .center)
                 .padding(.bottom, 40)
             NavigationLink("", isActive: $shouldShowImageSwipeView) {
-                ImageSwipeView(vm: imageSwipeViewModel)
+                ImageSwipeView(vm: imageSwipeViewModel, chatUser: $chatUser)
             }
         }
         .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
@@ -199,6 +200,6 @@ struct ImageSyncView: View {
 
 struct ImageSyncView_Previews: PreviewProvider {
     static var previews: some View {
-        ImageSyncView()
+        MainMessagesView()
     }
 }
