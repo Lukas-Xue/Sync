@@ -88,7 +88,7 @@ struct CardView: View {
                         .padding(8)
                         .background(.ultraThinMaterial)
                     NavigationLink("", isActive: $shouldOpenProfilePage) {
-                        ProfilePageView(chatUser: $chatUser, vm: self.profilePageViewModel, fromWhichView: false)
+                        ProfilePageView(chatUser: $chatUser, vm: self.profilePageViewModel, fromWhichView: false, fromYourself: false)
                     }
                     NavigationLink(destination: EmptyView()) {
                         EmptyView()

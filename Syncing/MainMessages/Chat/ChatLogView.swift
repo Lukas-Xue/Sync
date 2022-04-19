@@ -223,7 +223,7 @@ struct ChatLogView: View {
                     UIScrollView.appearance().keyboardDismissMode = .onDrag
                 }
             NavigationLink("", isActive: $shouldOpenProfilePage) {
-                ProfilePageView(chatUser: $chatUser, vm: self.profilePageViewModel, fromWhichView: true)
+                ProfilePageView(chatUser: $chatUser, vm: self.profilePageViewModel, fromWhichView: true, fromYourself: false)
             }
             NavigationLink(destination: EmptyView()) {
                 EmptyView()

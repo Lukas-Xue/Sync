@@ -68,17 +68,25 @@ struct MainMessagesView: View {
     @State var chatUser: ChatUser?
     @State var shouldShowImagePicker = false
     @State var shouldOpenChatLogView = false
+    @State var shouldOpenPPP = false
+    @ObservedObject var pppvm = ProfilePageViewModel(UserProfile: nil)
     public var chatLogViewModel = ChatLogViewModel(chatUser: nil)
     private var NavigationBar: some View {      // nav bar
         HStack {
-            WebImage(url: URL(string: vm.user?.profileImageUrl ?? ""))
-                .resizable()
-                .scaledToFill()
-                .frame(width: 50, height: 50)
-                .clipped()
-                .cornerRadius(50)
-                .overlay(RoundedRectangle(cornerRadius: 50).stroke(Color(.label), lineWidth: 1))
-                .shadow(radius: 5)
+            Button {
+                pppvm.UserProfile = vm.user
+                pppvm.fetchAllImages()
+                shouldOpenPPP.toggle()
+            } label: {
+                WebImage(url: URL(string: vm.user?.profileImageUrl ?? ""))
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: 50, height: 50)
+                    .clipped()
+                    .cornerRadius(50)
+                    .overlay(RoundedRectangle(cornerRadius: 50).stroke(Color(.label), lineWidth: 1))
+                    .shadow(radius: 5)
+            }
             
             VStack(alignment: .leading, spacing: 4) {
                 Text("\(vm.user?.email ?? "")")
@@ -226,8 +234,8 @@ struct MainMessagesView: View {
                 NavigationLink("", isActive: $shouldShowImagePicker) {
                     ImageSyncView(chatUser: $chatUser)
                 }
-                NavigationLink(destination: EmptyView()) {
-                    EmptyView()
+                NavigationLink("", isActive: $shouldOpenPPP) {
+                    ProfilePageView(chatUser: $vm.user, vm: pppvm, fromWhichView: false, fromYourself: true)
                 }
             }
             .overlay(bottomNavBar, alignment: .bottom)

@@ -37,6 +37,7 @@ struct ProfilePageView: View {
     @Environment(\.navigationManager) var nvmanager
     @ObservedObject var vm: ProfilePageViewModel
     @State var fromWhichView: Bool
+    @State var fromYourself: Bool
     @Environment(\.dismiss) var dismiss
     @State var shouldOpenChatLogView = false
     var chatLogViewModel = ChatLogViewModel(chatUser: nil)
@@ -56,25 +57,29 @@ struct ProfilePageView: View {
                     Spacer()
                     VStack {
                         Spacer()
-                        Button {
-                            self.chatLogViewModel.chatUser = vm.UserProfile
-                            self.chatLogViewModel.fetchMessages()
-                            if fromWhichView {
-                                dismiss()
-                            } else {
-                                chatUser = vm.UserProfile
-                                nvmanager.wrappedValue.popToRoot(tag:"nv1")
+                        if !fromYourself {
+                            Button {
+                                self.chatLogViewModel.chatUser = vm.UserProfile
+                                self.chatLogViewModel.fetchMessages()
+                                if fromWhichView {
+                                    dismiss()
+                                } else {
+                                    chatUser = vm.UserProfile
+                                    nvmanager.wrappedValue.popToRoot(tag:"nv1")
+                                }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "message")
+                                        .font(.system(size: 20))
+                                    Text("Message")
+                                        .font(.system(size: 20))
+                                }
+                                .padding(.trailing, 30)
+                                .cornerRadius(8)
+                                .shadow(radius: 10)
                             }
-                        } label: {
-                            HStack {
-                                Image(systemName: "message")
-                                    .font(.system(size: 20))
-                                Text("Message")
-                                    .font(.system(size: 20))
-                            }
-                            .padding(.trailing, 30)
-                            .cornerRadius(8)
-                            .shadow(radius: 10)
+                        } else {
+                            
                         }
                         Spacer()
                     }
